@@ -1,1 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mi Página con Grid-Container</title>
+  <meta charset="UTF-8">
+  <style>
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 500px 1fr;
+        grid-template-rows: 50px 1fr 1fr; /* la primera y última fila tienen una altura de 50px */
+        gap: 10px;
+        height: 400px; /* La altura total de la cuadrícula es ahora de 400px (50px + 1fr + 50px + espacio de separación) */
+      }
+      
+      .grid-item1{
+        border: 1px solid #ddd;
+        padding: 20px;
+        font-size: 30px;
+        text-align: center;
+      }
+      
+      .grid-kontainer {
+        display: grid;
+      }
+      
+      .grid-kontainer > div {
+        aspect-ratio: 1/1; /* Asegura que los elementos sean cuadrados */
+      }
+      
+      .grid-item2{
+      
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        font-size: 30px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+      
+      }
+      
+      .grid-item2 button {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        background-color: #4CAF50;
+        transition: background-color 0.3s ease;
+      }
+      
+  </style>
+</head>
+
+<body>
+
+  <div class="grid">
+
+    <div class="grid-item1">1</div>
+    <div class="grid-item1">2</div>
+    <div class="grid-item1">3</div>
+    
+    <div class="grid-item1">4</div>
+
+    <div id="mi-contenedor">
+      <p id="miPalabra"></p>
+    </div>
+    
+    <div class="grid-item1">
+      
+      <p>6</p>
+      
+      <button id="Limpiar">LimpiarPalabra</button><br>
+      <button id="Agregar">AgregarPalabra</button><br>
+      <button id="Mezclar">MezclarLetras</button><br>
+
+      <div id="MisPalabras"></div>
+
+    </div>
+
+    <div class="grid-item1">7</div>
+    <div class="grid-item1">8</div>
+    <div class="grid-item1">9</div>
+  </div>
+
+ <script>
+    class Boton {
+        constructor(index) {
+          this.index = index;
+          this.clicked = false;
+          this.element = this.createButtonContainer();
+          this.button = this.createButton();
+          this.element.appendChild(this.button);
+          const backgroundColor = this.getRandomColor();
+          this.element.style.backgroundColor = backgroundColor;
+          this.button.style.backgroundColor = backgroundColor;
+          
+          this.button.addEventListener("click", () => {
+            
+            if (!this.clicked) {
+              this.addToWord();
+              this.clicked = true;
+            }
+      
+            const backgroundColor = "Black";
+            this.element.style.backgroundColor = backgroundColor;
+            this.button.style.backgroundColor = backgroundColor;
+          });
+        }
+      
+        createButtonContainer() {
+          const container = document.createElement("div");
+          container.classList.add("grid-item2");
+          return container;
+        }
+      
+        createButton() {
+          const button = document.createElement("button");
+          button.textContent = this.getRandomLetter();
+          button.id = `button-${this.index}`;
+          return button;
+        }
+      
+        getRandomColor() {
+          return `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+            Math.random() * 256
+          )}, ${Math.floor(Math.random() * 256)})`;
+        }
+      
+        getRandomLetter() {
+          const letters = "EEEEEEEEEEEAAAOOOOOOSSSNNNRRRLLLUUUTCCCPPPMYYBBHHGFVQJÑXZ";
+          const numLetters = letters.length;
+          const index = Math.floor(Math.random() * numLetters);
+          return letters.charAt(index);
+        }
+      
+        addToWord() {
+          const span = document.createElement("span");
+          span.textContent = this.button.textContent;
+          document.getElementById("miPalabra").appendChild(span);
+        }
+      }
+      
+      class GenGrid {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.element = this.createGridContainer();
+          this.buttons = this.createButtons();
+        }
+      
+        createGridContainer() {
+          const container = document.createElement("div");
+          container.classList.add("grid-kontainer");
+          const gridTemplateColumns = `repeat(${this.x}, 1fr)`;
+          const gridTemplateRows = `repeat(${this.y}, 1fr)`;
+          container.style.gridTemplateColumns = gridTemplateColumns;
+          container.style.gridTemplateRows = gridTemplateRows;
+          return container;
+        }
+      
+        createButtons() {
+          const buttons = [];
+          const totalItems = this.x * this.y;
+          for (let i = 0; i < totalItems; i++) {
+            const button = new Boton(i);
+            buttons.push(button);
+            this.element.appendChild(button.element);
+          }
+          return buttons;
+        }
+      
+        clearWord() {
+          document.getElementById("miPalabra").textContent = "";
+          
+          this.buttons.forEach((button) => {  
+            if (button.clicked) {
+              button.clicked = false;
+              const randomColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+              button.element.style.backgroundColor = randomColor;
+              button.button.style.backgroundColor = randomColor;
+            }
+        });
+        }
+      
+        createWord() {
+          const miPalabraDiv = document.getElementById("miPalabra");
+          const misPalabrasDiv = document.getElementById("MisPalabras");
+        
+          const newParagraph = document.createElement("p");
+          const textNode = document.createTextNode(miPalabraDiv.textContent);
+          newParagraph.appendChild(textNode);
+          misPalabrasDiv.appendChild(newParagraph);
+        
+          miPalabraDiv.textContent = "";
+        
+          this.buttons.forEach((button) => {
+            if (button.clicked) {
+              const randomLetter = button.getRandomLetter();
+              button.button.textContent = randomLetter;
+              button.clicked = false;
+        
+              const randomColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+        
+              button.element.style.backgroundColor = randomColor;
+              button.button.style.backgroundColor = randomColor;
+            }
+          });
+        }
+      
+        suffleboard() {
+          const miPalabraDiv = document.getElementById("miPalabra");
+        
+          miPalabraDiv.textContent = "";
+        
+          this.buttons.forEach((button) => {
+            
+            const randomLetter = button.getRandomLetter();
+            button.button.textContent = randomLetter; 
+            button.clicked = false;
+            const randomColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+          
+            button.element.style.backgroundColor = randomColor;
+            button.button.style.backgroundColor = randomColor;
+          });
+        }
+      }
+      
+      const miContenedor = document.getElementById("mi-contenedor");
+      const gridContainer = new GenGrid(5, 5);
+      miContenedor.appendChild(gridContainer.element);
+      
+      const botonLimpiar = document.getElementById("Limpiar");
+      botonLimpiar.addEventListener("click", () => {
+        gridContainer.clearWord();
+      });
+      
+      const botonAgregar = document.getElementById("Agregar");
+      botonAgregar.addEventListener("click", () => {
+        gridContainer.createWord();
+      });
+      
+      const botonShuffle = document.getElementById("Mezclar");
+      botonShuffle.addEventListener("click", () => {
+        gridContainer.suffleboard();
+      });
+ </script>
+</body>
+</html>
 
